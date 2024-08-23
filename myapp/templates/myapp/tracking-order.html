@@ -1,0 +1,37 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% block title %} Exz.com - product detail {% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="position-relative p-5 text-center text-muted bg-body border border-dashed rounded-5">
+        <span style="color: red;">!!! กรุณาถ่ายภาพหน้านี้เก็บไว้เป็นหลักฐา !!!</span><br><br>
+      เลขที่อ้างอิง <span style="color: tomato;">{{ order_id }}</span>
+
+      <p class="col-lg-6 mx-auto mb-4">
+        หากมีความคืบหน้าทีมงานจะรีบติดต่อท่านทางอีเมล
+      </p>
+      <h4 style="font-style: bold; color: black;"> รายละเอียด: </h4>
+        <h5>สินค้า: {{ tracking_id.products.name }}</h5>
+        <h5>จำนวน: {{ tracking_id.count }} {{ tracking_id.products.unit }}</h5>
+        <h5>ราคาสินค้า: <span id="book_total">{{ buyer_price }}</span> บาท</h5>
+        <h5>ค่าจัดส่ง: <span id="shipping_total">{{ shipping_cost }}</span> บาท</h5>
+        <br>
+        <h4>ยอดรวมทั้งหมด: <span id="all_total">{{ all_price }}</span> บาท</h4>
+        <br>
+
+      <a href="{{ tracking_id.slip.url }}"><img src="{{ tracking_id.slip.url }}" alt="" width="400" class=" border border-dark"></a> 
+      <p>--------------------------------------------</p>
+        <h4 style="font-style: bold; color: black;"> ช้อมูลผู้ซื้อ: </h4>
+        <h5>ชื่อ: {{ tracking_id.first_name }} {{ tracking_id.last_name }}</h5>
+        <h5>Email: {{ tracking_id.email }} </h5>
+        <h5>เบอร์โทร: {{ tracking_id.tel }}</h5>
+        <h5>ที่อยู่: {{ tracking_id.address }}</h5>
+    </div>
+  </div>
+
+
+
+{% endblock content %}

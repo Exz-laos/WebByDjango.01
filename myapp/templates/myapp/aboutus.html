@@ -1,0 +1,17 @@
+{% extends 'myapp/base.html' %}
+{% block menubar %}
+<a class="nav-link fw-bold py-1 px-0" aria-current="page" href="{% url 'home' %}">home</a>
+<a class="nav-link fw-bold py-1 px-0" href="#">product</a>
+<a class="nav-link fw-bold py-1 px-0" href="#">check tracking</a>
+<a class="nav-link fw-bold py-1 px-0 active" href="{% url 'about-us' %}">about us</a>
+<a class="nav-link fw-bold py-1 px-0" href="{% url 'contact' %}">contact</a>
+{% endblock menubar %}
+{% block content %}
+
+    <h1>What is Exz.com?</h1>
+    <p class="lead">Ecommerce0 in LAOS</p>
+    <center><img src="https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP854/mbp14-silver2.png" width="400"></center>
+
+
+{% endblock content %}
+  

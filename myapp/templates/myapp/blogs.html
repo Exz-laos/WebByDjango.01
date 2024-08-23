@@ -1,0 +1,39 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% block title %} Exz.com - Blog {% endblock title %}
+
+{% block content %}
+
+    <section class="py-5 text-center container">
+        <div class="album py-5 bg-body-dark">
+            <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 text-start">
+                    {% for post in posts %}
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            {% if post.images %}
+                            <img class="bd-placeholder-img card-img-top" width="100%" height="225" style="object-fit: cover;" src="{{ post.images.url }}"></img>
+                            {% else %}
+                            <img class="bd-placeholder-img card-img-top" width="100%" height="225" style="object-fit: cover;" src="{% static 'images/profile.png' %}"></img>
+                            {% endif %}
+                            <div class="card-body">
+                                <p class="card-text">{{ post.title }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                      <a href="{% url 'post-detail' post.slug %}"> <button type="button" class="btn btn-sm btn-outline-secondary">read more...</button></a>
+                                    </div>
+                                    {% comment %} <small class="text-body-secondary">{{ post.date_created|date }}</small> {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock content %}

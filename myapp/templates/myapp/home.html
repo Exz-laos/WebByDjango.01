@@ -1,0 +1,12 @@
+{% extends 'myapp/base.html' %}
+
+{%block title%} Exz.com-Homepage {%endblock title%}
+
+{% block content %}
+    <h1>ເລືອກສິນຄ້າ</h1>
+    <p class="lead">We are biggest store in Laos </p>
+    <p class="lead">
+       <a class="btn btn-lg btn-light fw-bold border-white bg-white" href="{% url 'all-product' %}" >OrderNow!</a>
+    </p>
+{% endblock content %}
+

@@ -1,0 +1,77 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %} Exz.com - Blog content {% endblock title %}
+
+{% block content %}
+
+<div style="padding-top: 40px"></div>
+<main class="container">
+  <div class="row g-4  text-start">
+    <div class="col-md-8">
+      <article class="blog-post">
+        <p class="blog-post-meta">created on: {{ single_post.date_created | date }} </p>
+        <p class="display-5 link-body-emphasis mb-1 text-white">{{ single_post.title }}</p>
+        <hr>
+        {% if single_post.images %}
+        <img src="{{ single_post.images.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+        <p>no photo</p>
+        {% endif %}
+        <div style="padding-top: 20px"></div>
+        <blockquote class="blockquote">
+          <p>{{ single_post.description }}</p>
+        </blockquote>
+
+        <p>{{ single_post.body | safe }}</p>
+
+        <div style="padding-top: 50px"></div>
+        {% if single_post.author.image %}
+        <img src="{{ single_post.author.image.url}}" alt="" style="width: 50px; height: 50px; object-fit: cover;">
+        {% else %}
+        <p>no photo</p>
+        {% endif %}
+
+        <div style="padding-top: 20px"></div>
+        <h6 class="blog-post-meta">written by: {{ single_post.author.author_name }}</h6>
+
+        <h6 class="blog-post-meta">edit: {{ single_post.date_updated | date }}</h6>
+
+      </article>
+    </div>
+
+    <div class="col-md-4">
+      <div class="position-sticky" style="top: 2rem;">
+        <div>
+          <h4 class="fst-italic">บทความ ล่าสุด</h4>
+          <ul class="list-unstyled">
+            <li>
+              {% for post in posts %}
+              <a href="{% url 'post-detail' post.slug %}"
+                class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top">
+                {% if post.images %}
+                <img src="{{ post.images.url }}" alt="" style="width: 30%; height: 100%; object-fit: cover;">
+                {% else %}
+                <p> No photp </p>
+                {% endif %}
+                <div class="col-lg-8">
+                  <h6 class="mb-0" style="color:white">{{post.title}}</h6>
+                </div>
+              </a>
+              {% endfor %}
+            </li>
+          </ul>
+        </div>
+        <div class="p-4">
+          <h4 class="fst-italic">ช่องทางติดตาม</h4>
+          <ol class="list-unstyled">
+            <li><a href="https://www.facebook.com/UncleEngineer/" target="_blank">Facebook</a></li>
+            <li><a href="https://www.youtube.com/@thanongphone8465" target="_blank">YouTube</a></li>
+            <li><a href="https://uncle-engineer.com/" target="_blank">Website</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock content %}

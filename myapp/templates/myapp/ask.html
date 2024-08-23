@@ -1,0 +1,50 @@
+{% extends 'myapp/base.html' %}
+
+{%block title%}ask about problem here!!{%endblock title%}
+{% block content %}
+  {% comment "" %} contacter name (text) {% endcomment %}
+  {% comment "" %} email (text) {% endcomment %}
+  {% comment "" %} topic (text) {% endcomment %}
+  {% comment "" %} detail (textarea) {% endcomment %} <!-- just comment-->
+  
+<h1>ask about information here!!</h1>
+<div class="container text-left">
+    <form method="POST"><!--its used for sending data to backend-->
+       {% csrf_token %} <!--its related to securely token(special PW)-->
+       <!--its important to prevent hacking ,uesful-->
+       <div class="form-group"> <!--form group-->
+            <label for="name">contacter name</label>
+            <input type="text" class="form-control" id="name" name="name"> <!-- inside id=for-->
+  </div>
+     <div class="form-group"> <!--form group-->
+    <label for="email">email</label>
+    <input type="text" class="form-control" id="email" name="email"> <!-- inside id=for-->
+  {% comment %}
+  </div>
+       <div class="form-group"> <!--form group-->
+        <label for="title">topic</label>
+        <input type="text" class="form-control" id="tile" name="tile"> <!-- inside id=for-->
+   </div>
+   {% endcomment%}
+
+   <div class="form-group ">
+    <label for="title">topic</label>
+    <select class="form-select" id="title" name="title">
+      <option>product</option>
+      <option>return product</option>
+      <option>ask information</option>
+      <option>other</option>
+    </select>
+   </div>
+
+  
+  <div class="form-group"> <!--form group-->
+        <label for="detail">detail</label>
+        <textarea class="form-control" row="5" id="detail" name="detail" ></textarea>
+  </div>
+ <br>
+  <button type="submit" class="btn btn-primary"> submit </button>
+    </form>
+</div>
+
+{% endblock content %}

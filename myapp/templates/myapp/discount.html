@@ -1,0 +1,32 @@
+{% extends 'myapp/base.html' %}
+
+{%block title%}Welcome to register page{%endblock title%}
+{% block content %}
+
+<h2> Please read this condition "Super VIP discount"</h2>
+<div class="container">
+   <p align="left">  In case tou want to get discount,please read egilibity and agree condition only!<br>
+      1. You must be member of website<br>
+      2. You must be member for at least 30 days<br>
+      3. You must not be blacklisted status of website<br>
+      4. This discount will be available in 90 days after get its<br>
+      5. Use discount for product only , Online courses is not include<br>
+   </p>
+</div>
+<div class="container">
+    <form method="POST"><!--its used for sending data to backend-->
+       {% csrf_token %} <!--its related to securely token(special PW)-->
+       
+       <!--its important to prevent hacking ,uesful-->
+       <div class="form-group">
+        <input class="form-check-input" type="checkbox" value="check-true" id="discount" name="discount">&nbsp;
+        <label class="form-check-label" for="discount">
+          Yes,I agree 
+        </label>
+      </div><br>
+
+  <button type="submit" class="btn btn-primary"> Comfirm </button>
+    </form>
+</div>
+{% endblock content %}
+  

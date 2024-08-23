@@ -1,0 +1,64 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% block title %} Exz.com - products {% endblock title %}
+
+{% block content %}
+
+{% if user.is_authenticated and user.profile.usertype == 'vip' and user.discount.active == False %}
+
+<br><br>
+<div class="container">
+
+  <div class="alert alert-primary" role="alert">
+    คุณได้รับ <a href="{% url 'discount' %}" class="alert-link">ส่วนลดพิเศษ</a> ลด 10%
+  </div>
+
+</div>
+
+{% endif %}
+
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+    <h1 class="display-4 fw-normal text-body-white">สินค้าทั้งหมด</h1>
+    <p class="fs-5 text-body-white">ร้านขายของ ลุง.</p>
+</div>
+  <div class="row row-cols-1 row-cols-md-3 b-3 text-left">
+    {% for product in all_product %}
+    <div class="col">
+   
+      <div class="card mb-4 rounded-3 shadow-sm">
+        <div class="card-header py-3">
+            {% if product.images %}
+            <img class="bd-placeholder-img card-img-top" width="100%" height="225" style="object-fit: cover;" src="{{ product.images.url }}"></img>
+            {% else %}
+             <p>ไม่มีรูป</p>
+            {% endif %}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title pricing-card-title">ราคา {{ product.price1 }}<small class="text-body-secondary fw-light"> / THB</small></h5>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li>{{ product.name }}</li>
+            <li>หมวดหมู่ {{ product.category.category_name }}</li>
+            <li>จำนวน {{ product.quantity }}<small class="text-body-secondary fw-light"> {{ product.unit }}</small></li>
+          </ul>
+
+          <!-- # เพิ่มใหม่  -->
+          <div class="text-right">
+            {% if user.is_authenticated and user.profile.usertype == 'member' %}
+              <a href="{% url 'add-to-cart' product.id %}" class="btn btn-outline-primary btn-sm">เพิ่มไปยังรถเข็น</a>
+              <a href="{% url 'product-detail' product.slug %}" target="_blank" class="btn btn-primary btn-sm">สั่งซื้อ</a> 
+            {% else %} 
+                <a href="{% url 'login' %}" target="_blank" class="btn btn-danger btn-sm">ไปที่หน้าล็อกอิน</a>
+            {% endif %}
+          </div>
+          <!-- # เพิ่มใหม่  -->
+
+
+        </div>
+      </div>
+      
+    </div>
+    {% endfor %}
+  </div>
+{% endblock content %}

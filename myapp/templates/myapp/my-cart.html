@@ -1,0 +1,87 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com-mycart {% endblock title %}
+
+{% block content %}
+{% if status == 'delete '%}
+    <div class="alert alert-danger">
+      <strong>ลบรายการสำเร็จ!</strong> หากต้องการทำการสั่งซื้อใหม่ กรุณาติดต่อ Admin.
+    </div>
+    {% endif %}
+    <br />
+    <div class="text-color-black">
+      <h3>ตะกร้าสินค้า</h3>
+    </div>
+    <br />
+    <div class="container position-relative  text-center text-muted bg-body border border-dashed rounded-2">
+      
+      <div style="padding: 5px"></div>
+      <table class="table">
+          <tr>
+            <th>ไอดี</th>
+            <th>ชื่อสินค้า</th>
+            <th>เวลา</th>
+            <th>ลบ</th>
+            <th>ราคา</th>
+            <th>จำนวน</th>
+            <th>ยอดรวม</th>
+          </tr>
+          {% for pd in mycart %}
+          <tr>
+            <td>{{pd.product_id}}</td>
+            <td>{{pd.product_name}}</td>
+            <td>{{pd.stamp | date}}</td>
+            <td>
+
+              <form 
+                method="POST"
+                id="form{{pd.product_id}}"
+                onsubmit=" confirm('Are you confirm to Delete')"
+              >
+                {% csrf_token %}
+                <input
+                  type="hidden"
+                  name="product_id"
+                  value="{{pd.product_id}}"
+                />
+                <button
+                  type="submit"
+                  form="form{{pd.product_id}}"
+                  class="btn btn-outline-danger btn-sm"
+                >
+                  ลบ
+                </button>
+              </form>
+            </td>
+            <td>{{pd.price|intcomma}}</td>
+            <td>{{pd.quantity|intcomma}}</td>
+            <td>{{pd.total|intcomma}}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td><h5>ยอดรวมทั้งหมด</h5></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><h5>{{count|intcomma}}</h5></td>
+            <td><h5>{{total|intcomma}}</h5></td>
+          </tr>
+      </table>
+      <div style="padding: 5px"></div>
+      <div class="row text-left">
+        <div style="padding: 8px"></div>
+        <a href="" class="btn btn-primary btn-sm">สั่งชื้อ</a>
+        <div style="padding: 10px"></div>
+        <a href="" class="btn btn-outline-danger btn-sm"
+          >แก้ไขจำนวน</a
+        >
+      </div>
+      <div style="padding: 20px"></div>
+    </div>
+
+{% endblock content %}
