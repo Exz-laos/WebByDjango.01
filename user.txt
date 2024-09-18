@@ -1,2 +1,2 @@
-User:admin-uncle
-Pass:uncle12345678
+User:admin
+Pass:exz762004

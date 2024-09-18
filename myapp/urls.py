@@ -1,6 +1,4 @@
 from django.urls import path
-
-# from .views import Home, Sawatdee, AboutUs, Contact, Tracking
 from .views import *
 
 urlpatterns = [
@@ -25,17 +23,11 @@ urlpatterns = [
     # Cart
     path("add-cart/<int:pid>/", AddToCart, name="add-to-cart"),
     path("cart/", MyCart, name="my-cart"),
+    path('edit-cart/',MyCartEdit, name='my-cart-edit')
 
 ]
 
 
 
 
-    # path("edit-cart/", MyCartEdit, name="my-cart-edit"),
-    # path("checkout/", CheckOut, name="check-out"),
-    # path("orders/", CartOrderProduct, name="cart-order-product"),
-    # path("upload-slip/<str:order_id>/", MyOrderUploadSlip, name="my-order-upload-slip"),
-    # path("all-order/", AllOrderProduct, name="all-order-product"),
-    # path("update-status/<str:order_id>/<str:status>/", UpdatePaid, name="update-status"),
-    # path("update-tracking/<str:order_id>/", CartOrderUpdateTracking, name="cart-order-update-tracking"),
-    # path("my-order/<str:order_id>/", MyOrder, name="my-order"),
+    

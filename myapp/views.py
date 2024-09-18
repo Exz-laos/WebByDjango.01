@@ -379,11 +379,51 @@ def MyCart(request):
     context["total"] = total
     return render(request, "myapp/my-cart.html", context)
 
+#MyCartEdit
+def MyCartEdit(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+    context = {}
 
+    if request.method == "POST":
+        data = request.POST.copy()
+        # print(data)
+        if data.get("clear") == "clear":
+            print(data.get("clear"))
+            Cart.objects.filter(user=user).delete()
+            updated_quantity = Profile.objects.get(user=user)
+            updated_quantity.cart_quantity = 0
+            updated_quantity.save()
+            return redirect("my-cart")
 
+        edit_list = []
+        for k, v in data.items():
+            # print([k, v])
+            if k[:2] == "pd":
+                pid = int(k.split("_")[1])
+                dt = [pid, int(v)]
+                edit_list.append(dt)
+        # print('Edit list:', edit_list)
+        for ed in edit_list:
+            edit_cart = Cart.objects.get(product_id=ed[0], user=user)
+            edit_cart.quantity = ed[1]
+            calculate = edit_cart.price * ed[1]
+            edit_cart.total = calculate
+            edit_cart.save()
 
+        count = Cart.objects.filter(user=user)
+        count = sum([c.quantity for c in count])
+        updated_quantity = Profile.objects.get(user=user)
+        updated_quantity.cart_quantity = count
+        updated_quantity.save()
 
+        return redirect("my-cart")
 
+    mycart = Cart.objects.filter(user=user)
+    context["mycart"] = mycart
+    return render(request, "myapp/my-cart-edit.html", context)
+                
+                
 
 
 
@@ -392,380 +432,7 @@ def MyCart(request):
 
 
 
-# #  my cart edit
-# def MyCartEdit(request):
-#     username = request.user.username
-#     user = User.objects.get(username=username)
-#     context = {}
-
-#     if request.method == "POST":
-#         data = request.POST.copy()
-#         # print(data)
-#         if data.get("clear") == "clear":
-#             print(data.get("clear"))
-#             Cart.objects.filter(user=user).delete()
-#             updated_quantity = Profile.objects.get(user=user)
-#             updated_quantity.cart_quantity = 0
-#             updated_quantity.save()
-#             return redirect("my-cart")
-
-#         edit_list = []
-#         for k, v in data.items():
-#             # print([k, v])
-#             if k[:2] == "pd":
-#                 pid = int(k.split("_")[1])
-#                 dt = [pid, int(v)]
-#                 edit_list.append(dt)
-#         # print('Edit list:', edit_list)
-#         for ed in edit_list:
-#             edit_cart = Cart.objects.get(product_id=ed[0], user=user)
-#             edit_cart.quantity = ed[1]
-#             calculate = edit_cart.price * ed[1]
-#             edit_cart.total = calculate
-#             edit_cart.save()
-
-#         count = Cart.objects.filter(user=user)
-#         count = sum([c.quantity for c in count])
-#         updated_quantity = Profile.objects.get(user=user)
-#         updated_quantity.cart_quantity = count
-#         updated_quantity.save()
-
-#         return redirect("my-cart")
-
-#     mycart = Cart.objects.filter(user=user)
-#     context["mycart"] = mycart
-#     return render(request, "myapp/my-cart-edit.html", context)
-
-
-# # checkout
-# def CheckOut(request):
-#     username = request.user.username
-#     user = User.objects.get(username=username)
-
-#     if request.method == "POST":
-#         data = request.POST.copy()
-#         first_name = data.get("first_name")
-#         last_name = data.get("last_name")
-#         tel = data.get("tel")
-#         email = data.get("email")
-#         address = data.get("address")
-#         express = data.get("express")
-#         payment = data.get("payment")
-#         other = data.get("other")
-#         page = data.get("page")
-
-#         if page == "information":
-#             context = {}
-#             context["first_name"] = first_name
-#             context["last_name"] = last_name
-#             context["tel"] = tel
-#             context["email"] = email
-#             context["address"] = address
-#             context["express"] = express
-#             context["payment"] = payment
-#             context["other"] = other
-
-#             mycart = Cart.objects.filter(user=user)
-#             count = sum([c.quantity for c in mycart])
-#             total = sum([c.total for c in mycart])
-
-#             context["mycart"] = mycart
-#             context["count"] = count
-#             context["total"] = total
-
-#             return render(request, "myapp/checkout-confirm.html", context)
-
-#         if page == "confirm":
-#             print("Confirm")
-#             print(data)
-#             mycart = Cart.objects.filter(user=user)
-#             member_id = str(user.id).zfill(4)
-#             date_time = datetime.now().strftime("%Y%m%d%H%M%S")
-#             order_id = "OD" + member_id + date_time
-
-#             for mc in mycart:
-#                 cart_order = OrderProduct()
-#                 cart_order.order_id = order_id
-#                 cart_order.product_id = mc.product_id
-#                 cart_order.product_name = mc.product_name
-#                 cart_order.price = mc.price
-#                 cart_order.quantity = mc.quantity
-#                 cart_order.total = mc.total
-#                 cart_order.save()
-
-#             new_order = CartOrder()
-#             new_order.order_id = order_id
-#             new_order.user = user
-#             new_order.first_name = first_name
-#             new_order.last_name = last_name
-#             new_order.tel = tel
-#             new_order.email = email
-#             new_order.address = address
-#             new_order.express = express
-#             new_order.payment = payment
-#             new_order.other = other
-#             new_order.save()
-
-#             Cart.objects.filter(user=user).delete()
-#             updated_quantity = Profile.objects.get(user=user)
-#             updated_quantity.cart_quantity = 0
-#             updated_quantity.save()
-            
-#             return redirect("my-order-upload-slip", order_id=order_id)
-
-#     return render(request, "myapp/checkout.html")
-
-
-# #  cart order product
-# def CartOrderProduct(request):
-#     username = request.user.username
-#     user = User.objects.get(username=username)
-#     context = {}
-
-#     cart_order = CartOrder.objects.filter(user=user)
-
-#     for co in cart_order:
-#         order_id = co.order_id
-
-#         order_product = OrderProduct.objects.filter(order_id=order_id)
-
-#         total = sum([o.total for o in order_product])
-#         co.total = total
-#         count = sum([o.quantity for o in order_product])
-
-#         if co.express == "flash":
-#             shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
-#         elif co.express == "kerry":
-#             shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
-#         elif co.express == "j&t":
-#             shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
-#         elif co.express == "thailandpost":
-#             shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
-#         else:
-#             shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
-
-#         if co.payment == "cod":
-#             shipping_cost += 10
-#         co.shipping_cost = shipping_cost
-
-#     paginator = Paginator(cart_order, 4)
-#     page = request.GET.get("page")
-#     cart_order = paginator.get_page(page)
-#     context["cart_order"] = cart_order
-
-#     return render(request, "myapp/cart-order-product.html", context)
-
-
-
-# #  my order upload slip
-# def MyOrderUploadSlip(request, order_id):
-#     if request.method == "POST" and request.FILES["upload_slip"]:
-#         data = request.POST.copy()
-#         slip_time = data.get("slip_time")
-#         bank_account = data.get("bank_account")
-
-#         updated_cart_order = CartOrder.objects.get(order_id=order_id)
-#         updated_cart_order.slip_time = slip_time
-#         updated_cart_order.bank_account = bank_account
-
-#         file_image_slip = request.FILES["upload_slip"]
-#         file_image_name = request.FILES["upload_slip"].name.replace(" ", "")
-#         file_system_storage = FileSystemStorage()
-#         file_name = file_system_storage.save(file_image_name, file_image_slip)
-#         upload_file_url = file_system_storage.url(file_name)
-#         updated_cart_order.slip = upload_file_url[6:]
-
-#         updated_cart_order.save()
-        
-
-#     order_product = OrderProduct.objects.filter(order_id=order_id)
-#     total = sum([o.total for o in order_product])
-#     cart_order_detail = CartOrder.objects.get(order_id=order_id)
-#     count = sum([o.quantity for o in order_product])
-
-#     if cart_order_detail.express == "flash":
-#         shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
-#     elif cart_order_detail.express == "kerry":
-#         shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
-#     elif cart_order_detail.express == "j&t":
-#         shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
-#     elif cart_order_detail.express == "่thailandpost":
-#         shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
-#     else:
-#         shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
-
-#     if cart_order_detail.payment == "cod":
-#         shipping_cost += 10
-
-#     context = {
-#         "order_id": order_id,
-#         "total": total,
-#         "shipping_cost": shipping_cost,
-#         "grand_total": total + shipping_cost,
-#         "cart_order_detail": cart_order_detail,
-#         "count": count,
-#     }
-
-#     return render(request, "myapp/my-order-upload-slip.html", context)
-
-
-
-# #  all order product
-# def AllOrderProduct(request):
-#     context = {}
-#     cart_order = CartOrder.objects.all().order_by("-id")
-
-#     for co in cart_order:
-#         order_id = co.order_id
-#         order_product = OrderProduct.objects.filter(order_id=order_id)
-#         total = sum([o.total for o in order_product])
-#         co.total = total
-#         count = sum([o.quantity for o in order_product])
-
-#         if co.express == "flash":
-#             shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
-#         elif co.express == "kerry":
-#             shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
-#         elif co.express == "j&t":
-#             shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
-#         elif co.express == "thailandpost":
-#             shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
-#         else:
-#             shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
-
-#         if co.payment == "cod":
-#             shipping_cost += 10
-#         co.shipping_cost = shipping_cost
-
-#     paginator = Paginator(cart_order, 3)
-#     page = request.GET.get("page")
-#     cart_order = paginator.get_page(page)
-#     context["cart_order"] = cart_order
-
-#     return render(request, "myapp/all-order-product.html", context)
-
-
-
-# #  my cart update paid
-# def UpdatePaid(request, order_id, status):
-#     # try: 
-#     #     if request.user.profile.usertype != 'admin':
-#     #         return redirect('home')
-#     # except:
-#     #    return redirect('all-product') 
-    
-#     cart_order = CartOrder.objects.get(order_id=order_id)
-#     if status == "confirm":
-#         cart_order.paid = True
-#         cart_order.confirmed = True
-#         order_product = OrderProduct.objects.filter(order_id=order_id)
-        
-#         for op in order_product:
-#             product = Product.objects.get(id=op.product_id)
-#             product.quantity = product.quantity - op.quantity
-#             product.save()
-            
-#     elif status == 'cancel':
-#         cart_order.paid = False
-#         cart_order.confirmed = False
-#     cart_order.save()
-#     return redirect('all-order-product')
-        
-
-# #  my cart order update tracking  
-# def CartOrderUpdateTracking(request, order_id):
-#     # try: 
-#     #     if request.user.profile.usertype != 'admin':
-#     #         return redirect('home')
-#     # except:
-#     #    return redirect('all-product') 
-    
-#     if request.method == 'POST':
-#         cart_order = CartOrder.objects.get(order_id=order_id)
-#         data = request.POST.copy()
-#         tracking_number = data.get('tracking_number')
-#         cart_order.tracking_number = tracking_number
-#         cart_order.save()
-#         return redirect('all-order-product')
-    
-#     cart_order = CartOrder.objects.get(order_id=order_id)
-#     order_product = OrderProduct.objects.filter(order_id=order_id)
-    
-#     total = sum([o.total for o in order_product])
-#     cart_order.total = total
-#     count = sum([o.quantity for o in order_product])
-
-#     if cart_order.express == 'flash':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 10 for i in range(count)])
-#     elif cart_order.express == 'kerry':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 8 for i in range(count)])
-#     elif cart_order.express == 'j&t':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 9 for i in range(count)])
-#     elif cart_order.express == 'thailandpost':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 12 for i in range(count)])
-#     else:
-#         shipping_cost = sum(
-#             [20 if i == 0 else 11 for i in range(count)])
-
-#     if cart_order.payment == 'cod':
-#         shipping_cost += 10
-#     cart_order.shipping_cost = shipping_cost
-    
-#     context = {"cart_order": cart_order,
-#                "order_product": order_product,
-#                "total": total, "count": count}
-    
-#     return render(request, "myapp/cart-order-update-tracking.html", context)
-    
-
-
-
-# def MyOrder(request, order_id):
-#     username = request.user.username
-#     user = User.objects.get(username=username)
-
-#     cart_order = CartOrder.objects.get(order_id=order_id)
-#     if user != cart_order.user:
-#         return redirect('all-product')
-    
-#     order_product = OrderProduct.objects.filter(order_id=order_id)
-    
-#     total = sum([o.total for o in order_product])
-#     cart_order.total = total
-#     count = sum([o.quantity for o in order_product])
-
-#     if cart_order.express == 'flash':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 10 for i in range(count)])
-#     elif cart_order.express == 'kerry':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 8 for i in range(count)])
-#     elif cart_order.express == 'j&t':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 9 for i in range(count)])
-#     elif cart_order.express == 'thailandpost':
-#         shipping_cost = sum(
-#             [20 if i == 0 else 12 for i in range(count)])
-#     else:
-#         shipping_cost = sum(
-#             [20 if i == 0 else 11 for i in range(count)])
-
-#     if cart_order.payment == 'cod':
-#         shipping_cost += 10
-#     cart_order.shipping_cost = shipping_cost
-    
-    
-#     context = {"cart_order": cart_order,
-#                "order_product": order_product,
-#                "total": total, "count": count}
-    
-#     return render(request, "myapp/my-order.html", context)
-    
-    
-    
-    
+
+
+
 

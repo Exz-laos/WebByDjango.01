@@ -1,0 +1,71 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+{%if status == 'delete'%}
+    <div class="alert alert-danger">
+      <strong>ลบรายการสำเร็จ!</strong> หากต้องการทำการสั่งซื้อใหม่ กรุณาติดต่อ Admin.
+    </div>
+    {% endif %}
+    <br />
+
+    <div class="container">
+      <div class="text-color">
+        <h3>ตะกร้าสินค้า</h3>
+      </div>
+      <div style="padding: 5px"></div>
+      <form method="POST" id="formsave">
+        {% csrf_token %}
+        <table class="table">
+          <tr>
+            <th>ไอดี</th>
+            <th>ชื่อสินค้า</th>
+            <th>ราคา</th>
+            <th>จำนวน</th>
+          </tr>
+          {% for pd in mycart %}
+          <tr>
+            <td>{{pd.product_id}}</td>
+            <td>{{pd.product_name}}</td>
+            <td>{{pd.price|intcomma}}</td>
+            <td>
+              <input
+                type="text"
+                name="pd_{{pd.product_id}}"
+                value="{{pd.quantity}}"
+              />
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <div style="padding: 5px"></div>
+        <input type="hidden" name="checksave" value="checksave" />
+      </form>
+      <div class="row text-left">
+        <div style="padding: 8px"></div>
+        <form>
+        <button type="submit" form="formsave" class="btn btn-outline-primary btn-sm" style="width: 14%;">
+          จัดเก็บ
+        </button>
+        </form>
+        <div style="padding: 10px"></div>
+        <form
+          id="formclear"
+          method="POST"
+          onsubmit="return confirm('กดยืนยันเพื่อลบสินค้าทั้งหมด หรือ ไม่?')"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="clear" value="clear" />
+          <button type="submit" form="formclear" class="btn btn-outline-danger btn-sm">
+            ลบทั้งหมด
+          </button>
+        </form>
+      </div>
+      <div style="padding: 20px"></div>
+    </div>
+{% endblock content %}
