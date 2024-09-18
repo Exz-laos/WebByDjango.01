@@ -1,0 +1,94 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+<div class="container text-left">
+    <div class="text-color">
+    <h3>ข้อมูลการจัดส่ง</h3>
+    <p>
+      ชื่อผู้รับ: {{first_name}} {{last_name}}<br />
+      เบอร์โทรผู้รับ: {{tel}}<br />
+      อิเมล์: {{email}}<br />
+      ที่อยู่สำหรับการจัดส่ง: {{address}}<br />
+      {% if express == 'flash' %} 
+      ประเภทการจัดส่ง: Flash 
+      {% elif express == 'kerry' %} 
+          ประเภทการจัดส่ง: Kerry 
+      {% elif express == 'j&t' %} 
+          ประเภทการจัดส่ง: J&T 
+      {% elif express == 'thailandpost' %} 
+          ประเภทการจัดส่ง: Thailand Post
+      {% else %} 
+          ประเภทการจัดส่ง: ขนส่งอื่นๆ 
+      {% endif %}<br />
+
+      {% if payment == 'paynow' %} 
+          ชำระผ่าน: เก็บเงินต้นทาง 
+      {% elif payment == 'cod' %} 
+          ชำระผ่าน: เก็บเงินปลายทาง 
+      {% elif payment == 'transfer' %} 
+          ชำระผ่าน: โอนเงินเข้าบัญชีธนาคาร
+      {% else %} 
+          ชำระผ่าน: ชำระผ่านช่องทางอื่นๆ 
+      {% endif %}<br />
+      หมายเหด: {{other}}<br />
+    </p>   
+  
+  </div>
+  </div>
+  <div style="padding-top: 100px;"></div>
+  <div class="container text-left">
+    <div class="text-color">
+      <h3>รายการสั่งซื้อสินค้า</h3>
+    </div>
+    <div style="padding: 5px"></div>
+    <table class="table">
+        <tr>
+          <th>ไอดี</th>
+          <th>ชื่อสินค้า</th>
+          <th>ราคา</th>
+          <th>จำนวน</th>
+          <th>ยอดรวม</th>
+        </tr>
+          {% for pd in mycart %}
+        <tr>
+          <td>{{pd.product_id}}</td>
+          <td>{{pd.product_name}}</td>
+          <td>{{pd.price|intcomma}}</td>
+          <td>{{pd.quantity|intcomma}}</td>
+          <td>{{pd.total|intcomma}}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td><h5>ยอดรวม</h5></td>
+          <td></td>
+          <td></td>
+          <td><h5>{{count|intcomma}}</h5></td>
+          <td><h5>{{total|intcomma}}</h5></td>
+        </tr>
+    </table>
+    <div style="padding: 5px"></div>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="first_name" name="first_name" value="{{first_name}}" />
+        <input type="hidden" id="last_name" name="last_name" value="{{last_name}}" />
+        <input type="hidden" id="tel" name="tel" value="{{tel}}" />
+        <input type="hidden" id="email" name="email" value="{{email}}" />
+        <input type="hidden" id="address" name="address" value="{{address}}" />
+        <input type="hidden" id="express" name="express" value="{{express}}" />
+        <input type="hidden" id="payment" name="payment" value="{{payment}}" />
+        <input type="hidden" id="other" name="other" value="{{other}}" />
+        <input type="hidden" id="page" name="page" value="confirm" />
+        <button type="submit" class="btn btn-primary btn-sm">ยืนยัน</button>
+        <div style="padding: 20px"></div>
+    </form>
+
+  </div>
+
+
+{% endblock content %}

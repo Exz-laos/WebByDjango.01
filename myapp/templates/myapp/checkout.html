@@ -1,0 +1,129 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% block title %} เว็บลุงขายสินค้า - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+
+	<form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+		{% csrf_token %}
+<div class="py-5 text-left">
+        <p class="lead">{{ product.detail | safe }}</p>
+      </div>
+      <div class="row g-5 text-left">
+        <div class="col-md-7 col-lg">
+          <h1 class="mb-3">กรุณาป้อน ข้อมูลการจัดส่ง</h1>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label for="first_name" class="form-label">ชื่อ</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="ชื่อจริง" value="" required>
+                <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+				      <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+              </div>
+			  
+              <div class="col-sm-6">
+                <label for="last_name" class="form-label">นามสกุล</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="นามสกุล" value="" required>
+                <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+              </div>
+  
+			      <div class="col-12">
+                <label for="tel" class="form-label">เบอร์โทรศัพท์ <span class="text-body-secondary">(Optional)</span></label>
+                <input type="text" class="form-control" id="tel" name="tel" placeholder="เบอร์โทรศัพท์">
+                <div class="invalid-feedback"> กรอกข้อมูลแล้ว</div>
+              </div>
+ 
+              <div class="col-12">
+                <label for="email" class="form-label">อิเมล์ <span class="text-body-secondary">(Optional)</span></label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="ที่อยู่อิเมล์">
+                <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+              </div>
+
+ 
+              <div class="col-12">
+                <label for="address" class="form-label">ที่อยู่</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="ที่อยู่" required>
+                <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+              </div>
+
+              <p>----------------------------------------</p>
+              <label>เลือกประเภทการจัดส่ง</label>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="flash">
+                  <input type="radio" name="express" id="flash" value="flash" />
+                  Flash
+                </label>
+              </div>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="kerry">
+                  <input type="radio" name="express" id="kerry" value="kerry" />
+                  Kerry
+                </label>
+              </div>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="่j&t">
+                  <input type="radio" name="express" id="่j&t" value="่j&t" />
+                  J&T
+                </label>
+              </div>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="่thailandpost">
+                  <input type="radio" name="express" id="่thailandpost" value="่thailandpost" />
+                  Thailand Post
+                </label>
+              </div>
+        
+              <p>----------------------------------------</p>
+              <label>การชำระเงิน</label>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="paynow">
+                  <input type="radio" name="payment" id="paynow" value="paynow" />
+                  EMS
+                </label>
+              </div>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="cod">
+                  <input type="radio" name="payment" id="cod" value="cod" />
+                  COD
+                </label>
+              </div>
+        
+              <div class="form-check">
+                <label class="form-check-label" for="transfer">
+                  <input type="radio" name="payment" id="transfer" value="transfer" />
+                  โอนจ่ายผ่านมือถือ
+                </label>
+              </div>
+
+
+              <div class="col-12 form-group">
+                <label for="other" class="form-label">อื่นๆ:</label>
+                <textarea
+                  row="5"
+                  class="form-control" 
+                  id="other" 
+                  name="other" 
+                  placeholder="อื่นๆ..."
+                  ></textarea>
+                <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+				        <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+              </div>
+
+            </div>
+            <div style="padding-top: 100px;"></div>
+            <input type="hidden" name="page" value="information" />
+            <button type="submit" class="btn btn-primary btn-sm">หน้าถัดไป</button>
+        </div>
+      </div>
+	</form>
+<div style="padding-top: 100px;"></div>
+
+
+{% endblock content %}

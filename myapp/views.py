@@ -422,8 +422,85 @@ def MyCartEdit(request):
     mycart = Cart.objects.filter(user=user)
     context["mycart"] = mycart
     return render(request, "myapp/my-cart-edit.html", context)
+            
                 
-                
+# checkout
+def CheckOut(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+
+    if request.method == "POST":
+        data = request.POST.copy()
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
+        tel = data.get("tel")
+        email = data.get("email")
+        address = data.get("address")
+        express = data.get("express")
+        payment = data.get("payment")
+        other = data.get("other")
+        page = data.get("page")
+
+        if page == "information":
+            context = {}
+            context["first_name"] = first_name
+            context["last_name"] = last_name
+            context["tel"] = tel
+            context["email"] = email
+            context["address"] = address
+            context["express"] = express
+            context["payment"] = payment
+            context["other"] = other
+
+            mycart = Cart.objects.filter(user=user)
+            count = sum([c.quantity for c in mycart])
+            total = sum([c.total for c in mycart])
+
+            context["mycart"] = mycart
+            context["count"] = count
+            context["total"] = total
+
+            return render(request, "myapp/checkout-confirm.html", context)
+
+        if page == "confirm":
+            print("Confirm")
+            print(data)
+            mycart = Cart.objects.filter(user=user)
+            member_id = str(user.id).zfill(4)
+            date_time = datetime.now().strftime("%Y%m%d%H%M%S")
+            order_id = "OD" + member_id + date_time
+
+            for mc in mycart:
+                cart_order = OrderProduct()
+                cart_order.order_id = order_id
+                cart_order.product_id = mc.product_id
+                cart_order.product_name = mc.product_name
+                cart_order.price = mc.price
+                cart_order.quantity = mc.quantity
+                cart_order.total = mc.total
+                cart_order.save()
+
+            new_order = CartOrder()
+            new_order.order_id = order_id
+            new_order.user = user
+            new_order.first_name = first_name
+            new_order.last_name = last_name
+            new_order.tel = tel
+            new_order.email = email
+            new_order.address = address
+            new_order.express = express
+            new_order.payment = payment
+            new_order.other = other
+            new_order.save()
+
+            Cart.objects.filter(user=user).delete()
+            updated_quantity = Profile.objects.get(user=user)
+            updated_quantity.cart_quantity = 0
+            updated_quantity.save()
+            
+            return redirect("my-order-upload-slip", order_id=order_id)
+
+    return render(request, "myapp/checkout.html")    
 
 
 

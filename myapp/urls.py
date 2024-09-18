@@ -23,7 +23,8 @@ urlpatterns = [
     # Cart
     path("add-cart/<int:pid>/", AddToCart, name="add-to-cart"),
     path("cart/", MyCart, name="my-cart"),
-    path('edit-cart/',MyCartEdit, name='my-cart-edit')
+    path('edit-cart/',MyCartEdit, name='my-cart-edit'),
+    path('checkout/',CheckOut, name='checkout')
 
 ]
 
