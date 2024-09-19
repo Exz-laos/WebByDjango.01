@@ -24,8 +24,10 @@ urlpatterns = [
     path("add-cart/<int:pid>/", AddToCart, name="add-to-cart"),
     path("cart/", MyCart, name="my-cart"),
     path('edit-cart/',MyCartEdit, name='my-cart-edit'),
-    path('checkout/',CheckOut, name='checkout')
-
+    path('checkout/',CheckOut, name='checkout'),
+    path('orders/',CartOrderProduct, name='cart-order-product'),
+    path('upload-slip/<str:order_id>/',OrderUploadSlip, name='my-order-upload-slip'),
+    
 ]
 
 

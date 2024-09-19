@@ -501,8 +501,96 @@ def CheckOut(request):
             return redirect("my-order-upload-slip", order_id=order_id)
 
     return render(request, "myapp/checkout.html")    
+#  cart order product
+def CartOrderProduct(request):
+    username = request.user.username
+    user = User.objects.get(username=username)
+    context = {}
+
+    cart_order = CartOrder.objects.filter(user=user)
+
+    for co in cart_order:
+        order_id = co.order_id
+
+        order_product = OrderProduct.objects.filter(order_id=order_id)
+
+        total = sum([o.total for o in order_product])
+        co.total = total
+        count = sum([o.quantity for o in order_product])
+
+        if co.express == "flash":
+            shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
+        elif co.express == "kerry":
+            shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
+        elif co.express == "j&t":
+            shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
+        elif co.express == "thailandpost":
+            shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
+        else:
+            shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
+
+        if co.payment == "cod":
+            shipping_cost += 10
+        co.shipping_cost = shipping_cost
+
+    paginator = Paginator(cart_order, 4)
+    page = request.GET.get("page")
+    cart_order = paginator.get_page(page)
+    context["cart_order"] = cart_order
+
+    return render(request, "myapp/cart-order-product.html", context)
 
 
+#  my order upload slip
+def OrderUploadSlip(request, order_id):
+    if request.method == "POST" and request.FILES["upload_slip"]:
+        data = request.POST.copy()
+        slip_time = data.get("slip_time")
+        bank_account = data.get("bank_account")
+
+        updated_cart_order = CartOrder.objects.get(order_id=order_id)
+        updated_cart_order.slip_time = slip_time
+        updated_cart_order.bank_account = bank_account
+
+        file_image_slip = request.FILES["upload_slip"]
+        file_image_name = request.FILES["upload_slip"].name.replace(" ", "")
+        file_system_storage = FileSystemStorage()
+        file_name = file_system_storage.save(file_image_name, file_image_slip)
+        upload_file_url = file_system_storage.url(file_name)
+        updated_cart_order.slip = upload_file_url[6:]
+
+        updated_cart_order.save()
+        
+
+    order_product = OrderProduct.objects.filter(order_id=order_id)
+    total = sum([o.total for o in order_product])
+    cart_order_detail = CartOrder.objects.get(order_id=order_id)
+    count = sum([o.quantity for o in order_product])
+
+    if cart_order_detail.express == "flash":
+        shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
+    elif cart_order_detail.express == "kerry":
+        shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
+    elif cart_order_detail.express == "j&t":
+        shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
+    elif cart_order_detail.express == "่thailandpost":
+        shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
+    else:
+        shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
+
+    if cart_order_detail.payment == "cod":
+        shipping_cost += 10
+
+    context = {
+        "order_id": order_id,
+        "total": total,
+        "shipping_cost": shipping_cost,
+        "grand_total": total + shipping_cost,
+        "cart_order_detail": cart_order_detail,
+        "count": count,
+    }
+
+    return render(request, "myapp/my-order-upload-slip.html", context)
 
 
 

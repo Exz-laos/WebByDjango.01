@@ -1,0 +1,91 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <div class="text-color-black">
+      <h3>รายการสั่งซื้อทั้งหมด</h3>
+    </div>
+    <div style="padding: 5px"></div>
+    <table class="table">
+        <tr style="font-size: 14px;">
+          <th>รหัสคำสั่งซื้อ</th>
+          <th>เวลา</th>
+          <th>เลขพัสดุขนส่ง</th>
+          <th>ค่าขนส่ง</th>
+          <th>ยอดรวม</th>
+          <th>ยอดรวมทั้งหมด</th>
+          <th>สถานะ</th>
+        </tr>
+        {% for co in cart_order %}
+        <tr style="font-size: 14px;">
+          <td><a href="#" style="font-size: 14px;">{{co.order_id}}</a></td>
+          <td>{{co.stamp}}</td>
+          <td>
+            {% if co.tracking_number != None %}
+              {{co.tracking_number}}
+            {% endif %}
+          </td>
+          <td>
+            {{co.shipping_cost|intcomma}}
+          </td>
+          <td>{{co.total|intcomma}}</td>
+          <td>
+            {{co.total|add:co.shipping_cost|intcomma}}
+          </td>
+          <td>
+            {% if co.paid %} 
+            <i class="fa fa-check-square-o" style="font-size:14px;color:#ff0000;"> จ่ายแล้ว </i>
+            
+            {% else %}
+            <a href="#"style="font-size:14px;color:#2a8df4;" class="button-darken-blue">
+              อัปโหลดใบบิล
+            </a> 
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="padding: 5px"></div>
+    <ul class="pagination justify-content-end">
+      {% if cart_order.has_previous and cart_order.has_next != True %}
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.previous_page_number}}">
+        หน้าก่อน </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.number|add:-2}}">{{cart_order.number|add:-2}}</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.number|add:-1}}">{{cart_order.number|add:-1}}</a></li>
+      <li class="page-item active"><a class="page-link" href="?page={{cart_order.number}}">{{cart_order.number}}</a></li>
+      <li class="page-item disabled"><a class="page-link" href=""> หน้าถัดไป </a></li>
+      {% endif %}
+    
+      {% if cart_order.has_previous and cart_order.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.previous_page_number}}">
+        หน้าก่อน </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.number|add:-1}}">{{cart_order.number|add:-1}}</a></li>
+      <li class="page-item active"><a class="page-link" href="?page={{cart_order.number}}">{{cart_order.number}}</a></li>
+      <li class="page-item"><a class="page-link"  href="?page={{cart_order.number|add:1}}">{{cart_order.number|add:1}}</a></li>
+      <li class="page-item"><a class="page-link"  href="?page={{cart_order.next_page_number}}"> หน้าถัดไป </a></li>
+      {% endif %}
+    
+      {% if cart_order.has_next and cart_order.has_previous != True %}
+      <li class="page-item disabled"><a class="page-link" href="">
+        หน้าก่อน </a>
+      </li>
+      <li class="page-item active"><a class="page-link" href="?page={{cart_order.number}}">{{cart_order.number}}</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.number|add:1}}">{{cart_order.number|add:1}}</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.number|add:2}}">{{cart_order.number|add:2}}</a></li>
+      <li class="page-item"><a class="page-link" href="?page={{cart_order.next_page_number}}"> หน้าถัดไป </a></li>
+      {% endif %}
+    </ul> 
+    <a class="pagination justify-content-end" <i style="font-size:18px;color:grey;"> หน้า {{cart_order.number}} จาก {{cart_order.paginator.num_pages}} </i></a>
+    <div style="padding: 20px"></div>
+  </div>
+
+{% endblock content %}

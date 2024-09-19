@@ -1,0 +1,158 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+<style>
+    .text-color {
+      color: black;
+    }
+    .button{
+      background-color: #fff;
+      border: none;
+      color: white;
+      padding: 10px 28px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: block;
+
+      border-radius: 0px;
+      box-sizing: border-box;
+    }
+  
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: block;
+   
+      border-radius: 0px;
+      box-sizing: border-box;
+    }
+  
+    textarea[id="detail"],
+    select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: block;
+  
+      border-radius: 0px;
+      box-sizing: border-box;
+    }
+  
+    button[type="submit"] {
+      width: 100%;
+      background-color: #0d6efd;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 0px;
+      display: inline-block;
+      cursor: pointer;
+    }
+  
+    input[type="submit"]:hover {
+      background-color: #000000;
+    }
+  
+    div.card-container {
+      top: 0px;
+      position: relative;
+      border-radius: 0px;
+      padding: 20px;
+      margin-bottom: 40px;
+      text-decoration: none;
+      z-index: 0;
+      overflow: hidden;
+      border: 1px solid #f2f8f9;
+      box-shadow: 0px 4px 8px rgba(38, 38, 38, 0.1);
+
+      &:hover:before {
+        transform: scale(2.15);
+      }
+    } 
+  </style>
+<div class="container text-left">
+    <div class="card-container">
+      <h2>อัปโหลดใบบิล</h2>
+      <p>หมายเลขพัสดุ ของท่าน: {{order_id}}<br>
+        เลีอกขนส่ง: {{cart_order_detail.express}} ขนส่ง<br>
+        {% if cart_order_detail.payment|intcomma == 'cod' %}
+        บวกค่าบริการปลายทาง: 10 บาท<br>
+        {% endif %}
+        จำนวนสินค้า: {{count|intcomma}} รายการ<br>
+        ยอดรวมของสินค้า: {{total|intcomma}} บาท<br>
+        ค่าขนส่ง: {{shipping_cost|intcomma}} บาท<br> 
+      </p>
+  
+      <h3>
+        จำนวนเงินที่โอนทั้งหมด: {{grand_total|intcomma}} บาท
+      </h3>
+      {% if cart_order_detail.slip %}
+  
+      <img src="{{cart_order_detail.slip.url}} "  
+        width="150"
+        height="250">
+  
+      {% else %}
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+  
+        <div class="form-group">
+          <form action="/action_page.php">
+          <label for="slip_time">วันที่โอน:</label>
+          <input
+            type="date" 
+            id="slip_time"
+            placeholder="วันที่โอน..."
+            name="slip_time"
+          />
+        </div>
+  
+        <div class="form-group">
+          <label for="bank_account">เลือกธนาคาร:</label>
+          <select name="bank_account" id="bank_account" type="select">
+              <option value="KBank">KBank</option>
+              <option value="SCB">SCB</option>
+              <option value="TTB">TTB</option>
+              <option value="KTB">KTB</option>
+              <option value="BBL">BBL</option>
+              <option value="BAY">BAY</option>
+              <option value="อื่นๆ">อื่นๆ</option>
+            </select>
+        </div> 
+  
+        <div class="form-group">
+          <label for="upload_slip">อัปโหลดใบบิล:</label>
+          <input
+            type="file"
+            id="upload_slip"
+            placeholder="อัปโหลดใบบิล..."
+            name="upload_slip"
+          />
+        </div>
+        <button type="submit" class="button-dark-blue">ยืนยัน</button>
+      </form>
+    </form>
+    </div>
+    {% endif %}
+  </div>
+
+
+{% endblock content %}
