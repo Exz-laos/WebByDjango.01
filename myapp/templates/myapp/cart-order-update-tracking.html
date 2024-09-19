@@ -1,0 +1,101 @@
+{% extends 'myapp/base.html' %}
+
+{% load static %}
+
+{% load humanize %} 
+
+{% block title %} Exz.com - รายละเอียดสินค้า {% endblock title %}
+
+{% block content %}
+<div class="card-container text-left">
+    <div class="text-color">
+    <h3>ข้อมูลการจัดส่ง</h3>
+    <p>รหัสคำสั่งซื้อ: {{cart_order.order_id}} </p>
+    <p>
+      ชื่อผู้รับ: {{cart_order.first_name}} {{cart_order.last_name}}<br />
+      เบอร์โทรผู้รับ: {{cart_order.tel}}<br />
+      ที่อยู่สำหรับการจัดส่ง: {{cart_order.address}}<br />
+      {% if cart_order.express == 'flash' %} 
+          ประเภทการจัดส่ง: Flash 
+      {% elif cart_order.express == 'kerry' %} 
+          ประเภทการจัดส่ง: Kerry 
+      {% elif cart_order.express == 'j&t' %} 
+          ประเภทการจัดส่ง: J&T
+      {% elif cart_order.express == 'thailandpost' %} 
+          ประเภทการจัดส่ง: Thailand Post
+      {% else %} 
+          ประเภทการจัดส่ง: ขนส่งอื่นๆ  
+      {% endif %}<br />
+  
+      {% if cart_order.payment == 'paynow'%} 
+          ชำระผ่าน: เก็บเงินต้นทาง
+      {% elif cart_order.payment == 'cod' %} 
+          ชำระผ่าน: เก็บเงินปลายทาง 
+      {% elif cart_order.payment == 'transfer' %} 
+          ชำระผ่าน: โอนเงินเข้าบัญชีธนาคาร
+      {% else %} 
+          ชำระผ่าน: ชำระผ่านช่องทางอื่นๆ 
+      {% endif %}<br />
+          หมายเหด: {{cart_order.other}}
+    </p>   
+    </div>
+    <div style="padding-top: 100px"></div>
+    <div class="text-color">
+      <!-- <h3>Order List</h3> -->
+    </div>
+    <table class="table">
+        <tr>
+          <th>ไอดี</th>
+          <th>ชื่อสินค้า</th>
+          <th>ราคา</th>
+          <th>จำนวน</th>
+          <th>ยอดรวม</th>
+        </tr>
+          {% for op in order_product %}
+        <tr>
+          <td>{{op.product_id}}</td>
+          <td>{{op.product_name}}</td>
+          <td>{{op.price|intcomma}}</td>
+          <td>{{op.quantity|intcomma}}</td>
+          <td>{{op.total|intcomma}}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td><h5>ยอดรวม</h5></td>
+          <td></td>
+          <td></td>
+          <td><h5>{{count|intcomma}}</h5></td>
+          <td><h5>{{total|intcomma}}</h5></td>
+        </tr>
+    </table>
+    <div style="padding: 10px"></div>
+    <div class="text-color-black">
+      <!-- <h3>Check Order ID</h3> -->
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+        <form action="/action_page.php">
+          <label for="tracking_number">หมายเลขพัสดุ:</label>
+          <input
+            type="text"
+            id="tracking_number"
+            placeholder="กรอกหมายเลขพัสดุ..."
+            name="tracking_number"
+          />
+        </div>
+        <div style="padding-top: 100px"></div>
+        <button type="submit" class="btn btn-primary btn-sm">ยืนยัน</button>
+      </form>
+      </form>
+      <br>
+      <div class="text-color">
+        <h5>ค่าขนส่ง: {{cart_order.shipping_cost|intcomma}} บาท</h5>
+        <h3>ยอดโอนทั้งหมด: {{total|add:cart_order.shipping_cost|intcomma}} บาท</h3>
+      </div>
+    </div>
+    <div style="padding: 20px"></div>
+  </div>
+
+
+{% endblock content %}

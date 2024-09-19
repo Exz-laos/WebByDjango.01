@@ -593,11 +593,154 @@ def OrderUploadSlip(request, order_id):
     return render(request, "myapp/my-order-upload-slip.html", context)
 
 
+#  all order product CustomerAllOrder
+def CustomerAllOrder (request):
+    context = {}
+    cart_order = CartOrder.objects.all().order_by("-id")
+
+    for co in cart_order:
+        order_id = co.order_id
+        order_product = OrderProduct.objects.filter(order_id=order_id)
+        total = sum([o.total for o in order_product])
+        co.total = total
+        count = sum([o.quantity for o in order_product])
+
+        if co.express == "flash":
+            shipping_cost = sum([20 if i == 0 else 10 for i in range(count)])
+        elif co.express == "kerry":
+            shipping_cost = sum([20 if i == 0 else 8 for i in range(count)])
+        elif co.express == "j&t":
+            shipping_cost = sum([20 if i == 0 else 9 for i in range(count)])
+        elif co.express == "thailandpost":
+            shipping_cost = sum([20 if i == 0 else 12 for i in range(count)])
+        else:
+            shipping_cost = sum([20 if i == 0 else 11 for i in range(count)])
+
+        if co.payment == "cod":
+            shipping_cost += 10
+        co.shipping_cost = shipping_cost
+
+    paginator = Paginator(cart_order, 3)
+    page = request.GET.get("page")
+    cart_order = paginator.get_page(page)
+    context["cart_order"] = cart_order
+
+    return render(request, "myapp/customer-all-order.html", context)
 
 
+#  my cart update paid
+def UpdatePaid(request, order_id, status):
+    try: 
+        if request.user.profile.usertype != 'admin':
+            return redirect('home')
+    except:
+       return redirect('all-product') 
+    cart_order = CartOrder.objects.get(order_id=order_id)
+    if status == "confirm":
+        cart_order.paid = True
+        cart_order.confirmed = True
+        order_product = OrderProduct.objects.filter(order_id=order_id)
+        
+        for op in order_product:
+            product = Product.objects.get(id=op.product_id)
+            product.quantity = product.quantity - op.quantity
+            product.save()
+            
+    elif status == 'cancel':
+        cart_order.paid = False
+        cart_order.confirmed = False
+    cart_order.save()
+    return redirect('all-order-product')
 
 
+#  my cart order update tracking  
+def CartOrderUpdateTracking(request, order_id):
+    try: 
+        if request.user.profile.usertype != 'admin':
+            return redirect('home')
+    except:
+       return redirect('all-product') 
+    
+    if request.method == 'POST':
+        cart_order = CartOrder.objects.get(order_id=order_id)
+        data = request.POST.copy()
+        tracking_number = data.get('tracking_number')
+        cart_order.tracking_number = tracking_number
+        cart_order.save()
+        return redirect('customer-all-order')
+    
+    cart_order = CartOrder.objects.get(order_id=order_id)
+    order_product = OrderProduct.objects.filter(order_id=order_id)
+    
+    total = sum([o.total for o in order_product])
+    cart_order.total = total
+    count = sum([o.quantity for o in order_product])
+
+    if cart_order.express == 'flash':
+        shipping_cost = sum(
+            [20 if i == 0 else 10 for i in range(count)])
+    elif cart_order.express == 'kerry':
+        shipping_cost = sum(
+            [20 if i == 0 else 8 for i in range(count)])
+    elif cart_order.express == 'j&t':
+        shipping_cost = sum(
+            [20 if i == 0 else 9 for i in range(count)])
+    elif cart_order.express == 'thailandpost':
+        shipping_cost = sum(
+            [20 if i == 0 else 12 for i in range(count)])
+    else:
+        shipping_cost = sum(
+            [20 if i == 0 else 11 for i in range(count)])
+
+    if cart_order.payment == 'cod':
+        shipping_cost += 10
+    cart_order.shipping_cost = shipping_cost
+    
+    context = {"cart_order": cart_order,
+               "order_product": order_product,
+               "total": total, "count": count}
+    
+    return render(request, "myapp/cart-order-update-tracking.html", context)
 
 
+def MyOrder(request, order_id):
+    username = request.user.username
+    user = User.objects.get(username=username)
 
+    cart_order = CartOrder.objects.get(order_id=order_id)
+    if user != cart_order.user:
+        return redirect('all-product')
+    
+    order_product = OrderProduct.objects.filter(order_id=order_id)
+    
+    total = sum([o.total for o in order_product])
+    cart_order.total = total
+    count = sum([o.quantity for o in order_product])
+
+    if cart_order.express == 'flash':
+        shipping_cost = sum(
+            [20 if i == 0 else 10 for i in range(count)])
+    elif cart_order.express == 'kerry':
+        shipping_cost = sum(
+            [20 if i == 0 else 8 for i in range(count)])
+    elif cart_order.express == 'j&t':
+        shipping_cost = sum(
+            [20 if i == 0 else 9 for i in range(count)])
+    elif cart_order.express == 'thailandpost':
+        shipping_cost = sum(
+            [20 if i == 0 else 12 for i in range(count)])
+    else:
+        shipping_cost = sum(
+            [20 if i == 0 else 11 for i in range(count)])
+
+    if cart_order.payment == 'cod':
+        shipping_cost += 10
+    cart_order.shipping_cost = shipping_cost
+    
+    
+    context = {"cart_order": cart_order,
+               "order_product": order_product,
+               "total": total, "count": count}
+    
+    return render(request, "myapp/my-order.html", context)
 
