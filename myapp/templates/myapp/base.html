@@ -197,6 +197,7 @@
         {% if user.is_authenticated and user.profile.usertype == 'member' %}
           <a class="nav-link fw-bold py-1 px-0" href="{% url 'my-cart' %}">My Cart<span class="badge bg-primary"><font color="white">{{user.profile.cart_quantity}}</font></span></a>
           <a class="nav-link fw-bold py-1 px-0" href="{% url 'cart-order-product' %}">My order</a>
+          <a class="nav-link fw-bold py-1 px-0" href="{% url 'all-machine-page' %}">rental </a>
         {% endif %}
         <a class="nav-link fw-bold py-1 px-0" href="{% url 'contact' %}">Contact</a>
         <a class="nav-link fw-bold py-1 px-0" href="{% url 'ask' %}">Ask</a>

@@ -1,0 +1,23 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %} Exz.com - หน้าแรก {% endblock title %}
+
+{% block content %}
+    <div class="container mx-auto text-left">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+           {% for machine in machines %}
+            <div class="bg-dark p-6 rounded-lg shadow-lg">
+                {% if machine.images %}
+                <img class="bd-placeholder-img card-img-top" width="100%" height="225" style="object-fit: cover;" src="{{ machine.images.url }}"></img>
+                {% else %}
+                <p>ไม่มีรูป</p>
+                {% endif %}
+                <h2 class="text-xl font-bold">ชื่อ {{ machine.name }} รุ่น {{ machine.model }} ปี {{ machine.year }}</h2>
+                <p>หมวดหมู่: {{ machine.get_machine_type_display }}</p>
+                <p>ราคา: {{ machine.price_per_day }} บาท/วัน</p>
+                <a href="{% url 'machine-detail-page' machine.id %}" class="btn btn-danger btn-sm">ดูรายละเอียด</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

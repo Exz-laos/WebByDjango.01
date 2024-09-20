@@ -3,7 +3,7 @@ from django.contrib import admin
 # from .models import Tracking, Officer
 from .models import *
 from django_summernote.admin import SummernoteModelAdmin
-
+from django.utils.html import format_html
 
 admin.site.register(Author)
 
@@ -72,3 +72,34 @@ class CartOrderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CartOrder, CartOrderAdmin)
+
+
+# class MachineAdmin(admin.ModelAdmin):
+#     list_display = ["images","name", "model", "year"]
+# admin.site.register(Machine, MachineAdmin)
+
+
+class MachineAdmin(admin.ModelAdmin):
+    list_display = ["image_tag", "name", "model", "year"]
+
+    def image_tag(self, obj):
+        # แสดงรูปภาพใน admin panel โดยใช้ HTML
+        if obj.images:
+            return format_html('<img src="{}" width="25%" height="25%" style="object-fit: cover;" />', obj.images.url)
+        return "No Image"
+
+    image_tag.short_description = 'Image'  # กำหนดชื่อหัวข้อคอลัมน์
+
+admin.site.register(Machine, MachineAdmin)
+
+
+
+class ReservationAdmin(admin.ModelAdmin):
+    list_display = ["customer_name", "tel", "email"]
+admin.site.register(Reservation, ReservationAdmin)
+
+
+class CommentsAdmin(admin.ModelAdmin):
+    list_display = ["content", "name", "email"]
+admin.site.register(Comments, CommentsAdmin)
+

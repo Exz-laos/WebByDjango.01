@@ -31,6 +31,10 @@ urlpatterns = [
     path('update-status/<str:order_id>/<str:status>/',UpdatePaid, name='update-status'),
     path('update-tracking/<str:order_id>/',CartOrderUpdateTracking, name='cart-order-update-tracking'),
     path('my-order/<str:order_id>/',MyOrder, name='my-order'),
+    
+    #Machine
+    path('mechines/',AllMachine, name='all-machine-page'),
+    path('mechines/<int:machine_id>/',MachineDetail, name='machine-detail-page'),
 ]
 
 

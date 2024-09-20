@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from .models import *
 from django.contrib.auth.decorators import login_required  # บังคับล็อกอิน
 from django.contrib.auth.models import User
@@ -9,6 +9,10 @@ import string
 import random
 from datetime import datetime
 from django.core.paginator import Paginator
+from django.urls import reverse
+
+
+
 
 # Create your views here.
 # นี่คือเครื่องหมายคอมเมนท์ พิมพ์อะไรก็ได้ในบรรทัดนี้
@@ -744,3 +748,60 @@ def MyOrder(request, order_id):
     
     return render(request, "myapp/my-order.html", context)
 
+def AllMachine(request):
+    machines = Machine.objects.filter(available=True)
+
+    context = {"machines": machines}
+    return render(request, "myapp/machines.html", context)
+
+
+
+def MachineDetail(request, machine_id):
+    machines = Machine.objects.all().order_by("id").reverse()[:6]
+    machine = get_object_or_404(Machine, id=machine_id) 
+  
+    comments = Comments.objects.filter(machine=machine, parent=None)
+   
+    if request.method == "POST":
+        data = request.POST.copy() 
+
+        content = data.get("content")
+        name = data.get("name")
+        email = data.get("email")
+        website = data.get("website")
+        parent_id = data.get("parent")
+
+        parent_obj = None
+
+        if content:  
+            if parent_id: 
+                parent_obj = Comments.objects.get(id=parent_id) 
+                comment_reply = Comments(
+                    content=content,
+                    parent=parent_obj,
+                    machine=machine,
+                    name=name,
+                    email=email,
+                    website=website,
+                )
+                comment_reply.save() 
+                return HttpResponseRedirect(
+                    reverse("machine-detail-page", kwargs={"machine_id": machine_id})
+                )
+            
+            else: 
+                comment = Comments(
+                    content=content,
+                    machine=machine,
+                    name=name,
+                    email=email,
+                    website=website,
+                )
+                comment.save() 
+
+                return HttpResponseRedirect(
+                    reverse("machine-detail-page", kwargs={"machine_id": machine_id})
+                )
+                
+    context = {"machine": machine, "machines": machines, "comments": comments}
+    return render(request, "myapp/machine-detail.html", context)

@@ -1,0 +1,169 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %} Exz.com - หน้าแรก {% endblock title %}
+
+{% load static %}
+
+{% block content %}
+
+<div style="padding-top: 100px;"></div>
+<main class="container">
+    <div class="row g-4  text-start">
+  <div class="col-md-8">
+  <article class="blog-post">
+    <p class="display-5 link-body-emphasis mb-1 text-white">{{ machine.name }} {{ machine.model }}</p>
+    <hr>
+    {% if machine.images %}
+    <img src="{{ machine.images.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+    {% else %}
+    <p>ไม่มีรูปภาพ</p>
+    {% endif %}
+  
+    <div style="padding-top: 20px"></div>
+    <blockquote class="blockquote">
+      <p>{{ machine.year }}</p>
+    </blockquote>
+    <p> {{ machine.get_machine_type_display }} </p>
+    <div style="padding-top: 20px"></div>
+    <p>ราคา {{ machine.price_per_day }} ต่อวัน</p>
+    <div style="padding-top: 20px"></div>
+    <div class="row text-left">
+    <a href="#" class="btn btn-primary btn-sm">ไปที่รายการเช่า</a>
+    </div>
+    <div style="padding-top: 100px"></div> 
+   
+      <!-- comments -->
+    {% for comment in comments %}
+    <div class="user-comment mb-6">
+      <div class="author flex items-center mb-4">
+        <div class="profile-pic mr-4">
+          <img class="w-12 h-12 rounded-full" src="{% static 'images/profile.png' %}" alt="" />
+        </div>
+        <div class="details">
+          <p class="font-semibold text-lg">{{ comment.name }}</p>
+          <small class="text-white-500">{{ comment.date|date }}</small>
+        </div>
+      </div>
+      <div class="comment-sec-main bg-white-100 p-4 rounded-lg">
+        <div class="comment-sec mb-4">
+          <div class="comment mb-4">
+            <p class="text-white-700">{{ comment.content }}</p>
+          </div>
+          <div class="reply text-right">
+            <button class="text-blue-500 hover:text-blue-700" onclick="toggleDiv(this)">ตอบความคิดเห็น</button>
+          </div>
+          <div class="comment-box hidden mt-4" id="comment-reply-box">
+            <h3 class="text-lg font-semibold mb-2">ตอบกระทู้</h3>
+            <p class="text-sm text-white-600 mb-4">
+              ที่อยู่อีเมลของคุณจะไม่ถูกเผยแพร่
+              <span class="text-red-500">*</span>
+            </p>
+            <form method="POST" class="space-y-4">
+              {% csrf_token %}
+              <input type="hidden" name="parent" value="{{ comment.id }}">
+              <textarea name="content" class="w-full p-2 border rounded-md" rows="4" required></textarea>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" name="name" class="p-2 border rounded-md" placeholder="ชื่อของคุณ" required>
+                <input type="email" name="email" class="p-2 border rounded-md" placeholder="อีเมล์ของคุณ" required>
+                <input type="text" name="website" class="p-2 border rounded-md" placeholder="เว็บไซต์ของคุณ" required>
+              </div>
+              <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                Post Reply
+              </button>
+            </form>
+          </div>  
+        </div>
+        
+        {% for reply in comment.replies.all %}
+        <div class="public-reply pl-8 border-l-2 border-gray-200 mt-4 text-right">
+          <div class="author flex items-center flex-row-reverse mb-2">
+            <div class="profile-pic ml-4">
+              <img class="w-10 h-10 rounded-full" src="{% static 'images/avatar-profile.avif' %}" alt="" />
+            </div>
+            <div class="details text-right">
+              <p class="font-semibold text-md">{{ reply.name }}</p>
+              <small class="text-gray-500">{{ reply.date|date }}</small>
+            </div>
+          </div>
+          <div class="comment">
+            <p class="text-white-700">{{ reply.content }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+    <!-- comments end -->
+  
+    <!-- Leave a new comment -->
+    <div class="comment-box mt-8">
+      <h3 class="text-xl font-semibold mb-4">ฝากความคิดเห็นใหม่กับโพสต์นี้</h3>
+      <p class="text-sm text-white-600 mb-4">
+        ที่อยู่อีเมลของคุณจะไม่ถูกเผยแพร่
+        <span class="text-red-500">*</span>
+      </p>
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <!-- <input type="hidden" name="" value=""> -->
+        <textarea name="content" class="w-full p-2 border rounded-md" rows="4" required></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="text" name="name" class="p-2 border rounded-md" placeholder="ชื่อของคุณ" required>
+          <input type="email" name="email" class="p-2 border rounded-md" placeholder="อีเมล์ของคุณ" required>
+          <input type="text" name="website" class="p-2 border rounded-md" placeholder="เว็บไซต์ของคุณ" required>
+        </div>
+        <button class="btn btn-primary btn-sm">
+          โพสต์ความคิดเห็น
+        </button>
+      </form>
+    </div>
+
+    <script>
+        function toggleDiv(a){
+            const replybox = a.parentNode.parentNode.parentNode.querySelector(".comment-box");
+            if (replybox.style.display === "none"){
+                replybox.style.display = "block";
+            } else {
+                replybox.style.display = "none";
+            }
+        }
+    </script>
+
+  <!-- comments end -->
+  </article>
+  </div>
+  <div class="col-md-4">
+  <div class="position-sticky" style="top: 2rem;">
+    <div>
+      <h4 class="fst-italic">เตรื่องใหม่ล่าสุด</h4>
+      <ul class="list-unstyled">
+        <li>
+           {% for machine in machines %}
+          <a href="{% url 'machine-detail-page' machine.id %}" class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top">
+            {% if machine.images %}
+            <img src="{{ machine.images.url }}" alt="" style="width: 30%; height: 100%; object-fit: cover;">
+            {% else %}
+            <p>ไม่มีรูปภาพ</p>
+            {% endif %}
+            <div class="col-lg-8">
+              <h6 class="mb-0" style="color:white">{{ machine.name }}</h6>
+            </div>
+          </a>
+          {% endfor %}
+        </li>
+      </ul>
+    </div>
+  
+    <div class="p-4">
+      <h4 class="fst-italic">ช่องทางติดตาม</h4>
+      <ol class="list-unstyled">
+        <li><a href="#" target="_blank">Facebook</a></li>
+        <li><a href="#" target="_blank">YouTube</a></li>
+        <li><a href="#" target="_blank">Website</a></li>
+      </ol>
+    </div>
+  </div>
+  </div>
+    </div>
+</main>
+
+{% endblock content %}

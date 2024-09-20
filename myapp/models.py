@@ -194,3 +194,51 @@ class CartOrder(models.Model):
 
     def __str__(self):
         return self.order_id
+
+
+class Machine(models.Model):
+    MACHINE_TYPE =[
+        ("cnc","CNC"),
+        ("lathe","Lathe"),
+        ("milling","Milling"),
+        ("gear milling","Gear milling"),
+    ]
+    name = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
+    year = models.CharField(max_length=4)
+    machine_type = models.CharField(max_length=100, choices=MACHINE_TYPE, default="CNC")
+    images = models.ImageField(upload_to="machines", null=True, blank=True)
+    price_per_day = models.IntegerField(default=0)
+    earnest_money = models.IntegerField(default=1000, null=True, blank=True)
+    available = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.name
+
+class Reservation(models.Model):
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
+    id_card = models.CharField(max_length=13)
+    customer_name = models.CharField(max_length=50)
+    tel = models.CharField(max_length=11)
+    email = models.CharField(max_length=50, null=True, blank=True)
+    rental_price = models.IntegerField(default=0)
+    total_rental_price = models.IntegerField(default=0)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    slip = models.ImageField(upload_to="machine-slip/", null=True, blank=True)
+
+    def __str__(self):
+        return self.customer_name  
+    
+class Comments(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
+    content = models.TextField(null=True, blank=True)
+    date = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=50)
+    website = models.CharField(max_length=50)
+    parent = models.ForeignKey("self", on_delete=models.DO_NOTHING, null=True, blank=True, related_name="replies")
+    
+    
+    
