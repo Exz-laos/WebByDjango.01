@@ -103,3 +103,14 @@ class CommentsAdmin(admin.ModelAdmin):
     list_display = ["content", "name", "email"]
 admin.site.register(Comments, CommentsAdmin)
 
+
+
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['user']
+
+admin.site.register(Wishlist, WishlistAdmin)
+
+class WishlistItemAdmin(admin.ModelAdmin):
+    list_display = ['wishlist']
+
+admin.site.register(WishlistItem, WishlistItemAdmin)

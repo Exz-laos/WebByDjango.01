@@ -28,7 +28,7 @@
     <p>ราคา {{ machine.price_per_day }} ต่อวัน</p>
     <div style="padding-top: 20px"></div>
     <div class="row text-left">
-    <a href="#" class="btn btn-primary btn-sm">ไปที่รายการเช่า</a>
+    <a href="{% url 'make-reservation-page' machine.id %}" class="btn btn-primary btn-sm">ไปที่รายการเช่า</a>
     </div>
     <div style="padding-top: 100px"></div> 
    
@@ -37,8 +37,10 @@
     <div class="user-comment mb-6">
       <div class="author flex items-center mb-4">
         <div class="profile-pic mr-4">
-          <img class="w-12 h-12 rounded-full" src="{% static 'images/profile.png' %}" alt="" />
-        </div>
+          <img class="w-12 h-12 rounded-full" src="{% static 'images/profile.png' %}" alt="Profile Image" />
+      </div>
+      
+        
         <div class="details">
           <p class="font-semibold text-lg">{{ comment.name }}</p>
           <small class="text-white-500">{{ comment.date|date }}</small>
@@ -78,7 +80,7 @@
         <div class="public-reply pl-8 border-l-2 border-gray-200 mt-4 text-right">
           <div class="author flex items-center flex-row-reverse mb-2">
             <div class="profile-pic ml-4">
-              <img class="w-10 h-10 rounded-full" src="{% static 'images/avatar-profile.avif' %}" alt="" />
+              <img class="w-10 h-10 rounded-full" src="{% static 'images/profile.png' %}" alt="" />
             </div>
             <div class="details text-right">
               <p class="font-semibold text-md">{{ reply.name }}</p>

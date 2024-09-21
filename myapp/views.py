@@ -805,3 +805,91 @@ def MachineDetail(request, machine_id):
                 
     context = {"machine": machine, "machines": machines, "comments": comments}
     return render(request, "myapp/machine-detail.html", context)
+
+
+def MakeReservation(request, machine_id):
+    machine = get_object_or_404(Machine, id=machine_id)
+    context = {"machine": machine, "machine_price": machine.price_per_day}
+
+    if machine.price_discount > 0:
+        price_discount1 = (machine.price_discount * 100) / machine.price_per_day
+        context["price_discount1"] = 100 - int(price_discount1)
+        context["machine_price"] = machine.price_discount
+
+    if request.method == "POST":
+        try:
+            data = request.POST.copy()
+            id_card = data.get("id_card")
+            customer_name = data.get("customer_name")
+            tel = data.get("tel")
+            email = data.get("email")
+            rental_price = float(data.get("rental_price", 0))
+            total_rental_price  = float(data.get("total_rental_price", 0))
+            start_date = data.get("start_date")
+            end_date = data.get("end_date")
+
+            try:
+                if "upload_slip" in request.FILES:
+                    file_image = request.FILES["upload_slip"]
+                    file_image_name = file_image.name.replace(" ", "")
+                    file_system_storage = FileSystemStorage()
+                    file_name = file_system_storage.save(
+                        "machine-slip/" + file_image_name, file_image
+                    )
+                    upload_file_url = file_system_storage.url(file_name)
+                    slip = upload_file_url[6:]
+                else:
+                    slip = "/default.png"
+            except Exception as e:
+                slip = "/default.png"
+
+            reservation = Reservation.objects.create(
+                machine=machine,
+                id_card=id_card,
+                customer_name=customer_name,
+                tel=tel,
+                email=email,
+                rental_price=rental_price,
+                total_rental_price=total_rental_price,
+                start_date=start_date,
+                end_date=end_date,
+                slip=slip
+            )
+
+            machine.available = False
+            machine.save()
+
+            return redirect("all-machine-page")
+        except Exception as e:
+            context = {"error": f"เกิดข้อผิดพลาดที่ไม่คาดคิด: {e}"}
+
+            return render(request, "myapp/make-reservation.html", context)
+        
+    return render(request, "myapp/make-reservation.html", context)
+
+def Wishlists(request):
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+
+    context = {"wishlist": wishlist}
+    return render(request, "myapp/wishlist.html", context)
+
+
+
+# @login_required
+def AddtoWishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+    wishlist_item, created = WishlistItem.objects.get_or_create(
+        wishlist=wishlist, product=product
+    )
+
+    if not created:
+        wishlist_item.delete()
+
+    return redirect("all-product")
+
+def RemovefromWishlist(request, item_id):
+    wishlist_item = get_object_or_404(WishlistItem, id=item_id)
+    if wishlist_item.wishlist.user == request.user:
+        wishlist_item.delete()
+    return redirect("wishlist-page")

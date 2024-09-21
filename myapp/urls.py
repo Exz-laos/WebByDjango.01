@@ -35,6 +35,12 @@ urlpatterns = [
     #Machine
     path('mechines/',AllMachine, name='all-machine-page'),
     path('mechines/<int:machine_id>/',MachineDetail, name='machine-detail-page'),
+    path('mechines/<int:machine_id>/reserve',MakeReservation, name='make-reservation-page'),
+    #Wishlist
+    path('wishlist/',Wishlists, name='wishlist-page'),
+    path('wishlist/add/<int:product_id>/',AddtoWishlist, name='add-to-wishlist-page'),
+    path('wishlist/remove/<int:item_id>/',RemovefromWishlist, name='remove-from-wishlist-page'),
+  
 ]
 
 

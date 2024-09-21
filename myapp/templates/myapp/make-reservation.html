@@ -1,0 +1,179 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %} Exz.com - หน้าแรก {% endblock title %}
+
+{% block content %}
+
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+
+<div class="container mx-auto text-left p-4">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row g-5 text-left">      
+            <div class="col-md-5 col-lg-4  order-md-last">
+                <p class="price h4">{{ machine.name }}</p> 	
+                <div class="mb-3">
+                    <br>
+                    {% if price_discount1 %}
+                        <h2> <strike>ราคาปกติ {{ machine.price_per_day|cut:".0" }}  บาท</strike>  </h2>
+                        <h2 style="color: red;"> มีส่วนลดให้ เหลือเพียง  {{ machine.price_discount|cut:".0" }} บาท </h2>
+                    {% else %}
+                        <h2> ราคาปกติ {{ machine.price_per_day|cut:".0" }} บาท  </h2>
+                    {% endif %}
+                </div> 
+
+                    <label for="start_date">วันเริ่มต้น:</label>
+                    <input type="date" id="start_date" name="start_date" value="1" required>
+                    
+                    <label for="end_date">วันสิ้นสุด:</label>
+                    <input type="date" id="end_date" name="end_date" value="1" required>
+
+                    <input type="hidden" id="rental_price" name="rental_price" value="0">
+                    <input type="hidden" id="total_rental_price" name="total_rental_price" value="0">
+            
+                    <h5>ราคาเช่า: <span id="rent_machine_total"></span> บาท</h5>
+                    <h5>เงินมัดจำ: <span id="earnest_money_total"></span> บาท</h5>
+                    <h3>ยอดรวมทั้งหมด: <span id="all_total" style="color: green;"></span> บาท</h3>
+              
+                <div class="">
+                   {% if machine.price_per_day > 0 %}
+                        <div class="">
+                            <h5>วิธีการชำระเงิน</h5>
+                            {% if machine.id|stringformat:"s" == 'not-admin' %}
+                                <div class="container border p-3 rounded mt-2">
+                                    <h6>โอนผ่าน Promptpay</h6>
+                                </div>
+                                <div class="container border p-3 rounded mt-2">
+                                    <h6>Scan QR Code ผ่าน app ธนาคาร</h6>
+                                    <div class="qr-code img-responsive">
+                                        <img src="https://promptpay.io/0105565133253/{{machine.price_discount}}" id="qrcode_frame" frameborder="0" width="auto" height="auto"/>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="container border p-3 rounded mt-2">
+                                    <h6>โอนผ่าน Promptpay</h6>
+                                </div>
+                                <div class="container border p-3 rounded mt-2">
+                                    <h6>Scan QR Code ผ่าน app ธนาคาร</h6>
+                                    <div class="qr-code img-responsive">
+                                        <img src="https://promptpay.io/0105561008411/{{machine.price_discount}}" id="qrcode_frame" frameborder="0" width="auto" height="auto"/>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                        </div>
+                    {% endif %}
+                </div>
+            </div>  
+            <h1 class="text-3xl font-bold text-center my-8">ทำการจอง</h1>
+            <div class="bg-dark p-6 rounded-lg shadow-lg col-md-7 col-lg-8">
+               
+                <!-- เรนเดอร์ฟิลด์ฟอร์มโดยใช้ Django Forms -->
+                {{ form.as_p }}
+    
+                <div class="form-group">
+                    <div class="container border border-dark p-3">
+                        <div class="mb-4">
+                            <label for="id_card" class="block text-white-700">บัตรประชาชน</label>
+                            <input type="text" name="id_card" id="id_card" class="w-full p-2 border rounded">
+                            <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+                            <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="customer_name" class="block text-white-700">ชื่อลูกค้า</label>
+                            <input type="text" name="customer_name" id="customer_name" class="w-full p-2 border rounded">
+                            <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+                            <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="tel" class="block text-white-700">เบอร์โทรศัพท์</label>
+                            <input type="text" name="tel" id="tel" class="w-full p-2 border rounded">
+                            <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+                            <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-white-700">อิเมล์</label>
+                            <input type="email" name="email" id="email" class="w-full p-2 border rounded">
+                            <div class="invalid-feedback">กรอกข้อมูลแล้ว</div>
+                            <div class="invalid-feedback">จำเป็นต้องกรอก</div>
+                        </div>
+                        <p>รายละเอียดบัญชีที่โอน</p>
+                        <hr>
+                        <label for="upload_slip">อัพโหลดสลิป</label>
+                        <input type="file" class="form-control" id="upload_slip" name="upload_slip" accept="image/*" required>
+                        <div class="valid-feedback">อัพโหลดแล้ว</div>
+                        <div class="invalid-feedback">จำเป็นต้องอัพโหลด</div>
+                    </div>
+                </div>
+    
+                <div class="row text-left">
+                    <button type="submit" class="btn btn-primary btn-sm">เช่า</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    var machinePrice = parseFloat('{{ machine_price }}');
+    var earnestMoneyRate = parseFloat('{{ machine.earnest_money }}') || 0;  // ถ้า earnestMoney เป็น null จะใช้ 0 แทน
+    
+    function calculateDays(startDate, endDate) {
+        var start = new Date(startDate);
+        var end = new Date(endDate);
+        
+        // คำนวณความแตกต่างเป็นมิลลิวินาที
+        var timeDiff = end - start;
+        
+        // แปลงเป็นวัน (1 วัน = 1000 * 60 * 60 * 24 มิลลิวินาที)
+        var daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        
+        // ส่งคืนอย่างน้อย 1 วันหาก startDate และ endDate เป็นวันเดียวกัน
+        return Math.max(daysDiff, 1);
+    }
+    
+    function setTotal() {
+        var startDate = document.getElementById('start_date').value;
+        var endDate = document.getElementById('end_date').value;
+        
+        if (startDate && endDate) {
+            var numDays = calculateDays(startDate, endDate);
+            
+            // คำนวณราคาเช่าและเงินมัดจำ
+            var rentTotal = machinePrice * numDays;
+            var allRentTotal = earnestMoneyRate + rentTotal;
+            var allTotal = allRentTotal  
+            
+            // อัปเดต UI ด้วยค่าที่คำนวณได้
+            document.getElementById('rent_machine_total').innerText = rentTotal.toFixed(2);
+            document.getElementById('rental_price').value = rentTotal.toFixed(2);
+            
+            document.getElementById('earnest_money_total').innerText = earnestMoneyRate.toFixed(2);
+            document.getElementById('total_rental_price').value = allRentTotal.toFixed(2);
+            
+            document.getElementById('all_total').innerText = allTotal.toFixed(2);
+    
+            var qrCodeFrame = document.getElementById('qrcode_frame');
+            var qrCodeUrl = "https://promptpay.io/0105565133253/" + allTotal.toFixed(2);
+            qrCodeFrame.src = qrCodeUrl;
+        }
+    }
+    
+    function onChange() {
+        setTotal();
+    }
+    
+    function run() {
+        document.getElementById('start_date').addEventListener('change', onChange);
+        document.getElementById('end_date').addEventListener('change', onChange);
+        
+        setTotal(); //การคำนวณเบื้องต้นเมื่อโหลดหน้า
+    }
+    
+    run();
+    </script>
+{% endblock content %}
